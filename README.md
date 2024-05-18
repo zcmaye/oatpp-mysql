@@ -1,2 +1,3 @@
-# oatpp-starter-module [![oatpp build status](https://dev.azure.com/lganzzzo/lganzzzo/_apis/build/status/oatpp.oatpp-starter-module)](https://dev.azure.com/lganzzzo/lganzzzo/_build?definitionId=4)
-starter project for oatpp module
+# oatpp-mysql
+
+This library provides integration with MySQL database using [oatpp](https://github.com/oatpp/oatpp) framework.
