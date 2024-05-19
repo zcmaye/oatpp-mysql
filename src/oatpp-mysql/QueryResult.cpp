@@ -20,6 +20,7 @@ QueryResult::QueryResult(MYSQL_STMT* stmt,
 
 QueryResult::~QueryResult() {
   mysql_stmt_close(m_stmt);
+  OATPP_LOGD("QueryResult", "QueryResult destroyed");
 }
 
 provider::ResourceHandle<orm::Connection> QueryResult::getConnection() const {
@@ -47,6 +48,7 @@ bool QueryResult::hasMoreToFetch() const {
 }
 
 oatpp::Void QueryResult::fetch(const oatpp::Type* const type, v_int64 count) {
+  // OATPP_LOGD("QueryResult::fetch", "Fetching %d rows, type_id=%d, type_name=%s", count, type->classId.id, type->classId.name);
   return m_resultMapper->readRows(&m_resultData, type, count);
 }
 

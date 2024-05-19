@@ -17,6 +17,7 @@ set(OATPP_THIS_MODULE_SOURCES
         oatpp-mysql/Executor.hpp
         oatpp-mysql/QueryResult.cpp
         oatpp-mysql/QueryResult.hpp
+        oatpp-mysql/orm.hpp
 )
 
 add_library(${OATPP_THIS_MODULE_NAME} SHARED ${OATPP_THIS_MODULE_SOURCES})

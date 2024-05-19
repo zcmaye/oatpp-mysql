@@ -19,6 +19,7 @@ Executor::Executor(const std::shared_ptr<provider::Provider<Connection>>& connec
   : m_connectionProvider(connectionProvider)
   , m_connectionInvalidator(std::make_shared<ConnectionInvalidator>())
   , m_serializer(std::make_shared<mapping::Serializer>())
+  , m_resultMapper(std::make_shared<mapping::ResultMapper>())
 {
 
 }
@@ -152,9 +153,10 @@ std::shared_ptr<orm::QueryResult> Executor::execute(const StringTemplate& queryT
   }
 
   auto extra = std::static_pointer_cast<ql_template::Parser::TemplateExtra>(queryTemplate.getExtraData());
-  if (!mysql_stmt_prepare(stmt, extra->preparedTemplate->c_str(), extra->preparedTemplate->size())) {
+  if (mysql_stmt_prepare(stmt, extra->preparedTemplate->c_str(), extra->preparedTemplate->size())) {
     throw std::runtime_error("[oatpp::mysql::Executor::execute()]: "
-      "Error. Can't prepare MYSQL_STMT. Error: " + std::string(mysql_stmt_error(stmt)));
+      "Error. Can't prepare MYSQL_STMT. preparedTemplate: " + extra->preparedTemplate +
+      " Error: " + std::string(mysql_stmt_error(stmt)));
   }
 
   bindParams(stmt, queryTemplate, params, typeResolver);

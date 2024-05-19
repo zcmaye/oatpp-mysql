@@ -66,6 +66,16 @@ Serializer::Serializer() {
 
 }
 
+Serializer::~Serializer() {
+  // free memory allocated for is_null pointers
+  for(auto& bindParam : m_bindParams) {
+    if(bindParam.is_null) {
+      free(bindParam.is_null);
+      bindParam.is_null = nullptr;
+    }
+  }
+}
+
 void Serializer::setSerializerMethod(const data::mapping::type::ClassId& classId, SerializerMethod method) {
   const v_uint32 id = classId.id;
   if(id >= m_methods.size()) {
@@ -77,6 +87,10 @@ void Serializer::setSerializerMethod(const data::mapping::type::ClassId& classId
 void Serializer::serialize(MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) const {
   auto id = polymorph.getValueType()->classId.id;
   auto& method = m_methods[id];
+
+  OATPP_LOGD("Serializer::serialize()", "classId=%d, className=%s, paramIndex=%d, method=%p", 
+    id, polymorph.getValueType()->classId.name, paramIndex, method);
+
   if(method) {
     (*method)(this, stmt, paramIndex, polymorph);
   } else {
@@ -90,6 +104,13 @@ std::vector<MYSQL_BIND>& Serializer::getBindParams() const {
   return m_bindParams;
 }
 
+void Serializer::setBindParam(MYSQL_BIND& bind, v_uint32 paramIndex) const {
+  if (paramIndex >= m_bindParams.size()) {
+    m_bindParams.resize(paramIndex + 1);
+  }
+  m_bindParams[paramIndex] = bind;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Serializer functions
 
@@ -98,27 +119,27 @@ void Serializer::serializeString(const Serializer* _this, MYSQL_STMT* stmt, v_ui
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_STRING;
 
-  my_bool is_null = 1;
-
   if(polymorph) {
     std::string *buff = static_cast<std::string*>(polymorph.get());
 
-    bindParam.buffer = (void*) buff->c_str();
+    bindParam.buffer = static_cast<void*>(const_cast<char*>(buff->c_str()));
     bindParam.buffer_length = buff->size();
     bindParam.is_null = 0;
+
+    OATPP_LOGD("Serializer::serializeString()", "value='%s'", buff->c_str());
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
+    OATPP_LOGD("Serializer::serializeString()", "null");
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeInt8(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_TINY;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::Int8>();
@@ -127,18 +148,17 @@ void Serializer::serializeInt8(const Serializer* _this, MYSQL_STMT* stmt, v_uint
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeUInt8(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_TINY;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::UInt8>();
@@ -147,18 +167,17 @@ void Serializer::serializeUInt8(const Serializer* _this, MYSQL_STMT* stmt, v_uin
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeInt16(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_SHORT;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::Int16>();
@@ -167,18 +186,17 @@ void Serializer::serializeInt16(const Serializer* _this, MYSQL_STMT* stmt, v_uin
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeUInt16(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_SHORT;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::UInt16>();
@@ -187,18 +205,17 @@ void Serializer::serializeUInt16(const Serializer* _this, MYSQL_STMT* stmt, v_ui
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeInt32(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_LONG;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::Int32>();
@@ -207,18 +224,17 @@ void Serializer::serializeInt32(const Serializer* _this, MYSQL_STMT* stmt, v_uin
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeUInt32(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_LONG;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::UInt32>();
@@ -227,18 +243,17 @@ void Serializer::serializeUInt32(const Serializer* _this, MYSQL_STMT* stmt, v_ui
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeInt64(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_LONGLONG;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::Int64>();
@@ -247,18 +262,17 @@ void Serializer::serializeInt64(const Serializer* _this, MYSQL_STMT* stmt, v_uin
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeUInt64(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_LONGLONG;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::UInt64>();
@@ -267,18 +281,17 @@ void Serializer::serializeUInt64(const Serializer* _this, MYSQL_STMT* stmt, v_ui
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeFloat32(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_FLOAT;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::Float32>();
@@ -287,18 +300,17 @@ void Serializer::serializeFloat32(const Serializer* _this, MYSQL_STMT* stmt, v_u
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeFloat64(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
   MYSQL_BIND bindParam;
   std::memset(&bindParam, 0, sizeof(bindParam));
   bindParam.buffer_type = MYSQL_TYPE_DOUBLE;
-
-  my_bool is_null = 1;
 
   if(polymorph) {
     auto v = polymorph.cast<oatpp::Float64>();
@@ -307,10 +319,11 @@ void Serializer::serializeFloat64(const Serializer* _this, MYSQL_STMT* stmt, v_u
     bindParam.buffer_length = 0;
     bindParam.is_null = 0;
   } else {
-    bindParam.is_null = &is_null;
+    bindParam.is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+    *bindParam.is_null = 1;
   }
 
-  _this->m_bindParams.push_back(bindParam);
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeEnum(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {

@@ -19,11 +19,17 @@ public:
 
   Serializer();
 
+  ~Serializer();
+
   void setSerializerMethod(const data::mapping::type::ClassId& classId, SerializerMethod method);
 
   void serialize(MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) const;
 
   std::vector<MYSQL_BIND>& getBindParams() const;
+
+private:
+
+  void setBindParam(MYSQL_BIND& bind, v_uint32 paramIndex) const;
 
 private:
 

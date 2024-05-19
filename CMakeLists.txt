@@ -22,7 +22,7 @@ project(${OATPP_THIS_MODULE_NAME}
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(OATPP_DIR_SRC "Path to oatpp module directory (sources)")
 option(OATPP_DIR_LIB "Path to directory with liboatpp (directory containing ex: liboatpp.so or liboatpp.dynlib)")
-option(OATPP_BUILD_TESTS "Build tests for this module" OFF)
+option(OATPP_MYSQL_BUILD_TESTS "Build tests for this module" ON)
 option(OATPP_INSTALL "Install module binaries" ON)
 
 set(OATPP_MODULES_LOCATION "CUSTOM" CACHE STRING "Location where to find oatpp modules. can be [INSTALLED|EXTERNAL|CUSTOM]")
@@ -105,7 +105,7 @@ include(cmake/module-utils.cmake)
 
 add_subdirectory("src")
 
-if(OATPP_BUILD_TESTS)
+if(OATPP_MYSQL_BUILD_TESTS)
     enable_testing()
     add_subdirectory("test")
 endif()

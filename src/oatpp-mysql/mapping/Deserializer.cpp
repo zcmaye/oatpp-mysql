@@ -8,7 +8,7 @@ Deserializer::InData::InData(MYSQL_BIND* pBind,
   bind = pBind;
   typeResolver = pTypeResolver;
   oid = bind->buffer_type;
-  isNull = (bind->is_null != 0);
+  isNull = (*bind->is_null == 1);
 }
 
 Deserializer::Deserializer() {
@@ -54,6 +54,8 @@ void Deserializer::setDeserializerMethod(const data::mapping::type::ClassId& cla
 }
 
 oatpp::Void Deserializer::deserialize(const InData& data, const Type* type) const {
+
+  // OATPP_LOGD("Deserializer::deserialize()", "type=%s, oid=%d, isNull=%d", type->classId.name, data.oid, data.isNull);
 
   auto id = type->classId.id;
   auto& method = m_methods[id];
@@ -112,10 +114,17 @@ oatpp::Void Deserializer::deserializeString(const Deserializer* _this, const InD
   }
 
   auto ptr = (const char*) data.bind->buffer;
-  auto size = data.bind->buffer_length;
+  auto size = std::strlen(ptr);             // not including null-terminator
+  // TODO: check buffer_length vs size
+  size = std::min(size, data.bind->buffer_length - 1);
+
+  oatpp::String value(ptr, size);
+
+  // OATPP_LOGD("Deserializer::deserializeString()", "value='%s', size=%d, buffer_length=%d", value->c_str(), size, data.bind->buffer_length);
+
   std::memset(data.bind->buffer, 0, data.bind->buffer_length);
 
-  return oatpp::String(ptr, size);
+  return value;
 
 }
 

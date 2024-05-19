@@ -10,10 +10,15 @@ ResultMapper::ResultData::ResultData(MYSQL_STMT* pStmt, const std::shared_ptr<co
 }
 
 ResultMapper::ResultData::~ResultData() {
+  // free bind results
   for (auto& bind : bindResults) {
     if (bind.buffer) {
       free(bind.buffer);
       bind.buffer = nullptr;
+    }
+    if (bind.is_null) {
+      free(bind.is_null);
+      bind.is_null = nullptr;
     }
   }
 
@@ -28,8 +33,6 @@ void ResultMapper::ResultData::init() {
 }
 
 void ResultMapper::ResultData::next() {
-
-  // auto res = sqlite3_step(stmt);
   auto res = mysql_stmt_fetch(stmt);
 
   switch(res) {
@@ -60,9 +63,9 @@ void ResultMapper::ResultData::next() {
 
 void ResultMapper::ResultData::bindResultsForCache() {
   metaResults = mysql_stmt_result_metadata(stmt);
-
+  // if null, no result set
   if (metaResults) {
-    uint32_t colCount = mysql_num_fields(metaResults);
+    colCount = mysql_num_fields(metaResults);
     MYSQL_FIELD* fields = mysql_fetch_fields(metaResults);
 
     for (v_int32 i = 0; i < colCount; i++) {
@@ -70,12 +73,18 @@ void ResultMapper::ResultData::bindResultsForCache() {
       colNames.push_back(colName);
       colIndices.insert({colName, i});
 
+      // OATPP_LOGD("oatpp::mysql::mapping::ResultMapper::ResultData::bindResultsForCache()", "Column %d: %s - %d", 
+      //   i, colName->c_str(), fields[i].type);
+
       // bind result cache
       MYSQL_BIND bind;
       std::memset(&bind, 0, sizeof(bind));
 
       bind.buffer_type = fields[i].type;
-      bind.is_null = 0;
+
+      // indicate through is_null pointer if the value is null
+      my_bool* is_null = static_cast<my_bool*>(malloc(sizeof(my_bool)));
+      bind.is_null = is_null;
 
       if (fields[i].type == MYSQL_TYPE_TINY) {
         auto p_int8 = static_cast<int8_t*>(malloc(sizeof(int8_t)));
@@ -109,7 +118,8 @@ void ResultMapper::ResultData::bindResultsForCache() {
         bind.buffer_length = 0;
       }
       else if (fields[i].type == MYSQL_TYPE_STRING || fields[i].type == MYSQL_TYPE_VAR_STRING || 
-               fields[i].type == MYSQL_TYPE_VARCHAR || fields[i].type == MYSQL_TYPE_DATETIME) {
+               fields[i].type == MYSQL_TYPE_VARCHAR || fields[i].type == MYSQL_TYPE_DATETIME ||
+               fields[i].type == MYSQL_TYPE_DATE) {
         auto p_string = static_cast<char*>(malloc(fields[i].length + 1));
         bind.buffer_type = MYSQL_TYPE_STRING;
         bind.buffer = p_string;
@@ -228,8 +238,10 @@ oatpp::Void ResultMapper::readOneRowAsObject(ResultMapper* _this, ResultData* db
     if(it != fieldsMap.end()) {
       auto field = it->second;
       if(field->info.typeSelector && field->type == oatpp::Any::Class::getType()) {
+        // OATPP_LOGD("[oatpp::mysql::mapping::ResultMapper::readOneRowAsObject]", "polymorphic field=%s, index=%d", field->name, i);
         polymorphs.push_back({field, i});
       } else {
+        // OATPP_LOGD("[oatpp::mysql::mapping::ResultMapper::readOneRowAsObject]", "field=%s, index=%d", field->name, i);
         mapping::Deserializer::InData inData(&dbData->bindResults[i], dbData->typeResolver);
         field->set(static_cast<oatpp::BaseObject *>(object.get()),
                    _this->m_deserializer.deserialize(inData, field->type));
@@ -292,6 +304,8 @@ oatpp::Void ResultMapper::readOneRow(ResultData* dbData, const Type* type) {
   auto id = type->classId.id;
   auto& method = m_readOneRowMethods[id];
 
+  // OATPP_LOGD("[oatpp::mysql::mapping::ResultMapper::readOneRow]", "type=%s, method=%p", type->nameQualifier, method);
+
   if(method) {
     return (*method)(this, dbData, type);
   }
@@ -318,6 +332,8 @@ oatpp::Void ResultMapper::readRows(ResultData* dbData, const Type* type, v_int64
 
   auto id = type->classId.id;
   auto& method = m_readRowsMethods[id];
+
+  // OATPP_LOGD("[oatpp::mysql::mapping::ResultMapper::readRows]", "type=%s, method=%p, id=%d", type->classId.name, method, id);
 
   if(method) {
     return (*method)(this, dbData, type, count);

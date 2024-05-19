@@ -1,28 +1,15 @@
+#include "ql_template/ParserTest.hpp"
+#include "types/NumericTest.hpp"
 
-#include "oatpp-test/UnitTest.hpp"
-
-#include "oatpp-my-module/MyClass.hpp"
-
-#include "oatpp/core/concurrency/SpinLock.hpp"
 #include "oatpp/core/base/Environment.hpp"
 
 #include <iostream>
 
 namespace {
 
-class Test : public oatpp::test::UnitTest {
-public:
-  Test() : oatpp::test::UnitTest("MyTag")
-  {}
-
-  void onRun() override {
-    // TODO write correct  tests
-    MyClass::doSomething();
-  }
-};
-
 void runTests() {
-  OATPP_RUN_TEST(Test);
+  OATPP_RUN_TEST(oatpp::test::mysql::ql_template::ParserTest);
+  OATPP_RUN_TEST(oatpp::test::mysql::types::NumericTest);
 }
 
 }
