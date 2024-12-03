@@ -1,11 +1,15 @@
-#ifndef oatpp_mysql_Connection_hpp
+﻿#ifndef oatpp_mysql_Connection_hpp
 #define oatpp_mysql_Connection_hpp
 
 #include "oatpp/orm/Connection.hpp"
-#include "oatpp/core/provider/Pool.hpp"
-#include "oatpp/core/Types.hpp"
+#include "oatpp/provider/Pool.hpp"
+#include "oatpp/Types.hpp"
 
-#include <mysql/mysql.h>
+#ifdef _WIN32
+    #include "mysql.h"
+#else
+    #include "mysql/mysql.h"
+#endif // _WIN32
 
 namespace oatpp { namespace mysql {
 

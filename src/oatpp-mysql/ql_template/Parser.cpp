@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project         _____    __   ____   _      _
  *                (  _  )  /__\ (_  _)_| |_  _| |_
@@ -24,14 +24,14 @@
 
 #include "Parser.hpp"
 
-#include "oatpp/core/data/stream/BufferStream.hpp"
-#include "oatpp/core/parser/ParsingError.hpp"
+#include "oatpp/data/stream/BufferStream.hpp"
+#include "oatpp/utils/parser/ParsingError.hpp"
 
 namespace oatpp { namespace mysql { namespace ql_template {
 
 // create a variable which starts with ':' and ends with a non-alphanumeric character except '_' or '.'
 // e.g. :my_var.val
-data::share::StringTemplate::Variable Parser::parseIdentifier(parser::Caret& caret) {
+data::share::StringTemplate::Variable Parser::parseIdentifier(utils::parser::Caret& caret) {
   data::share::StringTemplate::Variable result;
   result.posStart = caret.getPosition();
   if(caret.canContinueAtChar(':', 1)) {
@@ -56,7 +56,7 @@ data::share::StringTemplate::Variable Parser::parseIdentifier(parser::Caret& car
 }
 
 // skip a string enclosed in quotes, e.g. "\'some string\'"
-void Parser::skipStringInQuotes(parser::Caret& caret) {
+void Parser::skipStringInQuotes(utils::parser::Caret& caret) {
 
   bool opened = false;
   while(caret.canContinueAtChar('\'', 1)) {
@@ -74,7 +74,7 @@ void Parser::skipStringInQuotes(parser::Caret& caret) {
 }
 
 // skip a string enclosed in dollars, e.g. "$some_string$"
-void Parser::skipStringInDollars(parser::Caret& caret) {
+void Parser::skipStringInDollars(utils::parser::Caret& caret) {
 
   if(caret.canContinueAtChar('$', 1)) {
 
@@ -106,7 +106,7 @@ void Parser::skipStringInDollars(parser::Caret& caret) {
 // find all variables in the given text and return a StringTemplate object
 // e.g. "SELECT * FROM table WHERE id = :id AND name = 'John'" -> ':id' is a variable
 data::share::StringTemplate Parser::parseTemplate(const oatpp::String& text) {
-  parser::Caret caret(text);
+	utils::parser::Caret caret(text);
 
   std::vector<data::share::StringTemplate::Variable> variables;
 
@@ -134,7 +134,7 @@ data::share::StringTemplate Parser::parseTemplate(const oatpp::String& text) {
   }
 
   if(caret.hasError()) {
-    throw oatpp::parser::ParsingError(caret.getErrorMessage(), caret.getErrorCode(), caret.getPosition());
+    throw oatpp::utils::parser::ParsingError(caret.getErrorMessage(), caret.getErrorCode(), caret.getPosition());
   }
 
   return data::share::StringTemplate(text, std::move(variables));

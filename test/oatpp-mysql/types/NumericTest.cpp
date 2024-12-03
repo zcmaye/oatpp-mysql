@@ -1,7 +1,7 @@
-#include "NumericTest.hpp"
+﻿#include "NumericTest.hpp"
 
 #include "oatpp-mysql/orm.hpp"
-#include "oatpp/parser/json/mapping/ObjectMapper.hpp"
+#include "oatpp/json/ObjectMapper.hpp"
 
 #include <limits>
 #include <cstdio>
@@ -64,7 +64,7 @@ void NumericTest::onRun() {
   options.password = "root";
   options.database = "test";
 
-  OATPP_LOGD(TAG, "Connect to database '%s' on '%s:%d'", options.database->c_str(), options.host->c_str(), options.port);
+  OATPP_LOGd(TAG, "Connect to database '%s' on '%s:%d'", options.database->c_str(), options.host->c_str(), options.port);
 
   auto connectionProvider = std::make_shared<oatpp::mysql::ConnectionProvider>(options);
   auto executor = std::make_shared<oatpp::mysql::Executor>(connectionProvider);
@@ -74,10 +74,10 @@ void NumericTest::onRun() {
   // {
   //   auto res = client.selectAllNums();
   //   if(res->isSuccess()) {
-  //     OATPP_LOGD(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
+  //     OATPP_LOGd(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
   //   } else {
   //     auto message = res->getErrorMessage();
-  //     OATPP_LOGD(TAG, "Error, message=%s", message->c_str());
+  //     OATPP_LOGd(TAG, "Error, message=%s", message->c_str());
   //   }
 
   //   auto dataset = res->fetch<oatpp::Vector<oatpp::Object<NumsRow>>>();
@@ -88,7 +88,7 @@ void NumericTest::onRun() {
 
   //   auto str = om.writeToString(dataset);
 
-  //   OATPP_LOGD(TAG, "res=%s", str->c_str());
+  //   OATPP_LOGd(TAG, "res=%s", str->c_str());
 
   //   OATPP_ASSERT(dataset->size() == 4);
 
@@ -137,10 +137,10 @@ void NumericTest::onRun() {
   {
     auto res = client.deleteAllNums();
     if (res->isSuccess()) {
-      OATPP_LOGD(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
+      OATPP_LOGd(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
     } else {
       auto message = res->getErrorMessage();
-      OATPP_LOGD(TAG, "Error, message=%s", message->c_str());
+      OATPP_LOGd(TAG, "Error, message=%s", message->c_str());
     }
 
     OATPP_ASSERT(res->isSuccess());
@@ -170,27 +170,27 @@ void NumericTest::onRun() {
       client.insertNumValues(row, connection);
     }
 
-    OATPP_LOGD(TAG, "Insert 2 rows successfully");
+    OATPP_LOGd(TAG, "Insert 2 rows successfully");
   }
 
   {
     auto res = client.selectAllNums();
     if(res->isSuccess()) {
-      OATPP_LOGD(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
+      OATPP_LOGd(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
     } else {
       auto message = res->getErrorMessage();
-      OATPP_LOGD(TAG, "Error, message=%s", message->c_str());
+      OATPP_LOGd(TAG, "Error, message=%s", message->c_str());
     }
 
     auto dataset = res->fetch<oatpp::Vector<oatpp::Object<NumsRow>>>();
 
-    oatpp::parser::json::mapping::ObjectMapper om;
-    om.getSerializer()->getConfig()->useBeautifier = true;
-    om.getSerializer()->getConfig()->enabledInterpretations = {"mysql"};
+    oatpp::json::ObjectMapper om;
+    om.serializerConfig().json.useBeautifier = true;
+	om.serializerConfig().mapper.enabledInterpretations = { "mysql" };
 
     auto str = om.writeToString(dataset);
 
-    OATPP_LOGD(TAG, "res=%s", str->c_str());
+    OATPP_LOGd(TAG, "res=%s", str->c_str());
 
     OATPP_ASSERT(dataset->size() == 2);
 

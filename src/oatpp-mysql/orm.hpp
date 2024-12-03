@@ -1,4 +1,4 @@
-/**[info]
+﻿/**[info]
  *
  * This is just a header file which includes all oatpp-mysql components:
  */
@@ -10,7 +10,7 @@
 
 #include "oatpp/orm/SchemaMigration.hpp"
 #include "oatpp/orm/DbClient.hpp"
-#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/macro/codegen.hpp"
 
 
 

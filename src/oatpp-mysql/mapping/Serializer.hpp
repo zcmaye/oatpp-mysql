@@ -1,8 +1,12 @@
-#ifndef oatpp_mysql_mapping_Serializer_hpp
+﻿#ifndef oatpp_mysql_mapping_Serializer_hpp
 #define oatpp_mysql_mapping_Serializer_hpp
 
-#include "oatpp/core/Types.hpp"
-#include <mysql/mysql.h>
+#include "oatpp/Types.hpp"
+#ifdef _WIN32
+    #include "mysql.h"
+#else
+    #include "mysql/mysql.h"
+#endif // _WIN32
 
 namespace oatpp { namespace mysql { namespace mapping {
 
@@ -21,7 +25,7 @@ public:
 
   ~Serializer();
 
-  void setSerializerMethod(const data::mapping::type::ClassId& classId, SerializerMethod method);
+  void setSerializerMethod(const data::type::ClassId& classId, SerializerMethod method);
 
   void serialize(MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) const;
 

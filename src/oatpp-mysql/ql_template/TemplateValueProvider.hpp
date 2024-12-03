@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  * Project         _____    __   ____   _      _
  *                (  _  )  /__\ (_  _)_| |_  _| |_
@@ -26,7 +26,7 @@
 #define oatpp_mysql_ql_template_TemplateValueProvider_hpp
 
 #include "oatpp/orm/Executor.hpp"
-#include "oatpp/core/data/stream/BufferStream.hpp"
+#include "oatpp/data/stream/BufferStream.hpp"
 
 namespace oatpp { namespace mysql { namespace ql_template {
 

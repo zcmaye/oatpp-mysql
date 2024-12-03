@@ -1,10 +1,15 @@
-#ifndef oatpp_mysql_mapping_Deserializer_hpp
+﻿#ifndef oatpp_mysql_mapping_Deserializer_hpp
 #define oatpp_mysql_mapping_Deserializer_hpp
 
-#include "oatpp/core/data/mapping/TypeResolver.hpp"
-#include "oatpp/core/Types.hpp"
+#include "oatpp/data/mapping/TypeResolver.hpp"
+#include "oatpp/Types.hpp"
 
-#include <mysql/mysql.h>
+#ifdef _WIN32
+    #include "mysql.h"
+#else
+    #include "mysql/mysql.h"
+#endif // _WIN32
+
 
 namespace oatpp { namespace mysql { namespace mapping {
 
@@ -13,7 +18,7 @@ namespace oatpp { namespace mysql { namespace mapping {
  */
 class Deserializer {
 public:
-  typedef oatpp::data::mapping::type::Type Type;
+  typedef oatpp::data::type::Type Type;
 public:
 
   // Data structure to hold one column of data
@@ -42,7 +47,7 @@ public:
 
   Deserializer();
 
-  void setDeserializerMethod(const data::mapping::type::ClassId& classId, DeserializerMethod method);
+  void setDeserializerMethod(const data::type::ClassId& classId, DeserializerMethod method);
 
   oatpp::Void deserialize(const InData& data, const Type* type) const;
 

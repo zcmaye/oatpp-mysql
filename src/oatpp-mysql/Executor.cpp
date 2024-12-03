@@ -1,4 +1,4 @@
-#include "Executor.hpp"
+﻿#include "Executor.hpp"
 
 #include "ql_template/Parser.hpp"
 #include "ql_template/TemplateValueProvider.hpp"
@@ -64,7 +64,7 @@ data::share::StringTemplate Executor::parseQueryTemplate(const oatpp::String& na
 // e.g. "user.name.first" -> QueryParameter{name="user", propertyPath={"name", "first"}}
 Executor::QueryParameter Executor::parseQueryParameter(const oatpp::String& paramName) {
 
-  parser::Caret caret(paramName);
+  utils::parser::Caret caret(paramName);
   auto nameLabel = caret.putLabel();
   if(caret.findChar('.') && caret.getPosition() < caret.getDataSize() - 1) {
 

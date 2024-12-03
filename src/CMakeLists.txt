@@ -1,4 +1,4 @@
-set(OATPP_THIS_MODULE_SOURCES 
+﻿set(OATPP_THIS_MODULE_SOURCES 
         oatpp-mysql/mapping/Deserializer.cpp
         oatpp-mysql/mapping/Deserializer.hpp
         oatpp-mysql/mapping/ResultMapper.cpp
@@ -20,7 +20,8 @@ set(OATPP_THIS_MODULE_SOURCES
         oatpp-mysql/orm.hpp
 )
 
-add_library(${OATPP_THIS_MODULE_NAME} SHARED ${OATPP_THIS_MODULE_SOURCES})
+
+add_library(${OATPP_THIS_MODULE_NAME} STATIC ${OATPP_THIS_MODULE_SOURCES})
 
 set_target_properties(${OATPP_THIS_MODULE_NAME} PROPERTIES
         CXX_STANDARD 11
@@ -39,7 +40,11 @@ target_include_directories(${OATPP_THIS_MODULE_NAME}
 )
 
 ## TODO link dependencies here (if some)
+if(MSVC)
+target_link_libraries(${OATPP_THIS_MODULE_NAME} PRIVATE libmysql)
+else()
 target_link_libraries(${OATPP_THIS_MODULE_NAME} PRIVATE mysqlclient)
+endif()
 
 #######################################################################################################
 ## install targets
