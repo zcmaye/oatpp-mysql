@@ -49,7 +49,7 @@ bool QueryResult::hasMoreToFetch() const {
 }
 
 oatpp::Void QueryResult::fetch(const oatpp::Type* const type, v_int64 count) {
-  // OATPP_LOGd("QueryResult::fetch", "Fetching %d rows, type_id=%d, type_name=%s", count, type->classId.id, type->classId.name);
+  // OATPP_LOGd("QueryResult::fetch", "Fetching {} rows, type_id={}, type_name={}", count, type->classId.id, type->classId.name);
   return m_resultMapper->readRows(&m_resultData, type, count);
 }
 

@@ -84,7 +84,7 @@ void Serializer::serialize(MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::V
   auto id = polymorph.getValueType()->classId.id;
   auto& method = m_methods[id];
 
-  OATPP_LOGd("Serializer::serialize()", "classId=%d, className=%s, paramIndex=%d, method=%p", 
+  OATPP_LOGd("Serializer::serialize()", "classId={}, className={}, paramIndex={}, method={}", 
     id, polymorph.getValueType()->classId.name, paramIndex, method);
 
   if(method) {
@@ -122,7 +122,7 @@ void Serializer::serializeString(const Serializer* _this, MYSQL_STMT* stmt, v_ui
     bindParam.buffer_length = buff->size();
     bindParam.is_null = 0;
 
-    OATPP_LOGd("Serializer::serializeString()", "value='%s'", buff->c_str());
+    OATPP_LOGd("Serializer::serializeString()", "value='{}'", buff->c_str());
   } else {
     bindParam.is_null = static_cast<bool*>(malloc(sizeof(bool)));
     *bindParam.is_null = 1;

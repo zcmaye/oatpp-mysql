@@ -64,7 +64,7 @@ void NumericTest::onRun() {
   options.password = "root";
   options.database = "test";
 
-  OATPP_LOGd(TAG, "Connect to database '%s' on '%s:%d'", options.database->c_str(), options.host->c_str(), options.port);
+  OATPP_LOGd(TAG, "Connect to database '{}' on '{}:{}'", options.database->c_str(), options.host->c_str(), options.port);
 
   auto connectionProvider = std::make_shared<oatpp::mysql::ConnectionProvider>(options);
   auto executor = std::make_shared<oatpp::mysql::Executor>(connectionProvider);
@@ -74,10 +74,10 @@ void NumericTest::onRun() {
   // {
   //   auto res = client.selectAllNums();
   //   if(res->isSuccess()) {
-  //     OATPP_LOGd(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
+  //     OATPP_LOGd(TAG, "OK, knownCount={}, hasMore={}", res->getKnownCount(), res->hasMoreToFetch());
   //   } else {
   //     auto message = res->getErrorMessage();
-  //     OATPP_LOGd(TAG, "Error, message=%s", message->c_str());
+  //     OATPP_LOGd(TAG, "Error, message={}", message->c_str());
   //   }
 
   //   auto dataset = res->fetch<oatpp::Vector<oatpp::Object<NumsRow>>>();
@@ -88,7 +88,7 @@ void NumericTest::onRun() {
 
   //   auto str = om.writeToString(dataset);
 
-  //   OATPP_LOGd(TAG, "res=%s", str->c_str());
+  //   OATPP_LOGd(TAG, "res={}", str->c_str());
 
   //   OATPP_ASSERT(dataset->size() == 4);
 
@@ -137,10 +137,10 @@ void NumericTest::onRun() {
   {
     auto res = client.deleteAllNums();
     if (res->isSuccess()) {
-      OATPP_LOGd(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
+      OATPP_LOGd(TAG, "OK, knownCount={}, hasMore={}", res->getKnownCount(), res->hasMoreToFetch());
     } else {
       auto message = res->getErrorMessage();
-      OATPP_LOGd(TAG, "Error, message=%s", message->c_str());
+      OATPP_LOGd(TAG, "Error, message={}", message->c_str());
     }
 
     OATPP_ASSERT(res->isSuccess());
@@ -176,10 +176,10 @@ void NumericTest::onRun() {
   {
     auto res = client.selectAllNums();
     if(res->isSuccess()) {
-      OATPP_LOGd(TAG, "OK, knownCount=%d, hasMore=%d", res->getKnownCount(), res->hasMoreToFetch());
+      OATPP_LOGd(TAG, "OK, knownCount={}, hasMore={}", res->getKnownCount(), res->hasMoreToFetch());
     } else {
       auto message = res->getErrorMessage();
-      OATPP_LOGd(TAG, "Error, message=%s", message->c_str());
+      OATPP_LOGd(TAG, "Error, message={}", message->c_str());
     }
 
     auto dataset = res->fetch<oatpp::Vector<oatpp::Object<NumsRow>>>();
@@ -190,7 +190,7 @@ void NumericTest::onRun() {
 
     auto str = om.writeToString(dataset);
 
-    OATPP_LOGd(TAG, "res=%s", str->c_str());
+    OATPP_LOGd(TAG, "res={}", str->c_str());
 
     OATPP_ASSERT(dataset->size() == 2);
 

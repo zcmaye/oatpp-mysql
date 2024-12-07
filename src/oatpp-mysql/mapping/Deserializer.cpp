@@ -55,7 +55,7 @@ void Deserializer::setDeserializerMethod(const data::type::ClassId& classId, Des
 
 oatpp::Void Deserializer::deserialize(const InData& data, const Type* type) const {
 
-  // OATPP_LOGd("Deserializer::deserialize()", "type=%s, oid=%d, isNull=%d", type->classId.name, data.oid, data.isNull);
+  // OATPP_LOGd("Deserializer::deserialize()", "type={}, oid={}, isNull={}", type->classId.name, data.oid, data.isNull);
 
   auto id = type->classId.id;
   auto& method = m_methods[id];
@@ -120,7 +120,7 @@ oatpp::Void Deserializer::deserializeString(const Deserializer* _this, const InD
 
   oatpp::String value(ptr, size);
 
-  // OATPP_LOGd("Deserializer::deserializeString()", "value='%s', size=%d, buffer_length=%d", value->c_str(), size, data.bind->buffer_length);
+  // OATPP_LOGd("Deserializer::deserializeString()", "value='{}', size={}, buffer_length={}", value->c_str(), size, data.bind->buffer_length);
 
   std::memset(data.bind->buffer, 0, data.bind->buffer_length);
 

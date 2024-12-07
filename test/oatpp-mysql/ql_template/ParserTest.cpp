@@ -17,18 +17,18 @@ void ParserTest::onRun() {
     auto result = Parser::parseTemplate(text);
 
     OATPP_LOGd(TAG, "--- case1 ---");
-    OATPP_LOGd(TAG, "sql='%s'", text->c_str());
+    OATPP_LOGd(TAG, "sql='{}'", text->c_str());
 
     OATPP_ASSERT(result.getTemplateVariables().size() == 2);
 
     auto vars = result.getTemplateVariables();
     OATPP_LOGd(TAG, "variables:");
-    OATPP_LOGd(TAG, "%s: [%d -> %d]", vars[0].name->c_str(), vars[0].posStart, vars[0].posEnd);
+    OATPP_LOGd(TAG, "{}: [{} -> {}]", vars[0].name->c_str(), vars[0].posStart, vars[0].posEnd);
     OATPP_ASSERT(vars[0].posStart == 31);
     OATPP_ASSERT(vars[0].posEnd == 33);
     OATPP_ASSERT(vars[0].name == "id");
 
-    OATPP_LOGd(TAG, "%s: [%d -> %d]", vars[1].name->c_str(), vars[1].posStart, vars[1].posEnd);
+    OATPP_LOGd(TAG, "{}: [{} -> {}]", vars[1].name->c_str(), vars[1].posStart, vars[1].posEnd);
     OATPP_ASSERT(vars[1].posStart == 46);
     OATPP_ASSERT(vars[1].posEnd == 50);
     OATPP_ASSERT(vars[1].name == "name");
@@ -40,14 +40,14 @@ void ParserTest::onRun() {
     auto result = Parser::parseTemplate(text);
 
     OATPP_LOGd(TAG, "--- case2 \'\' ---");
-    OATPP_LOGd(TAG, "sql='%s'", text->c_str());
+    OATPP_LOGd(TAG, "sql='{}'", text->c_str());
 
     OATPP_ASSERT(result.getTemplateVariables().size() == 1);
 
     auto vars = result.getTemplateVariables();
     OATPP_LOGd(TAG, "variables:");
 
-    OATPP_LOGd(TAG, "%s: [%d -> %d]", vars[0].name->c_str(), vars[0].posStart, vars[0].posEnd);
+    OATPP_LOGd(TAG, "{}: [{} -> {}]", vars[0].name->c_str(), vars[0].posStart, vars[0].posEnd);
     OATPP_ASSERT(vars[0].posStart == 48);
     OATPP_ASSERT(vars[0].posEnd == 52);
     OATPP_ASSERT(vars[0].name == "name");
@@ -59,18 +59,18 @@ void ParserTest::onRun() {
     auto result = Parser::parseTemplate(text);
 
     OATPP_LOGd(TAG, "--- case3 $$ ---");
-    OATPP_LOGd(TAG, "sql='%s'", text->c_str());
+    OATPP_LOGd(TAG, "sql='{}'", text->c_str());
 
     OATPP_ASSERT(result.getTemplateVariables().size() == 2);
 
     auto vars = result.getTemplateVariables();
     OATPP_LOGd(TAG, "variables:");
-    OATPP_LOGd(TAG, "%s: [%d -> %d]", vars[0].name->c_str(), vars[0].posStart, vars[0].posEnd);
+    OATPP_LOGd(TAG, "{}: [{} -> {}]", vars[0].name->c_str(), vars[0].posStart, vars[0].posEnd);
     OATPP_ASSERT(vars[0].posStart == 31);
     OATPP_ASSERT(vars[0].posEnd == 33);
     OATPP_ASSERT(vars[0].name == "id");
 
-    OATPP_LOGd(TAG, "%s: [%d -> %d]", vars[1].name->c_str(), vars[1].posStart, vars[1].posEnd);
+    OATPP_LOGd(TAG, "{}: [{} -> {}]", vars[1].name->c_str(), vars[1].posStart, vars[1].posEnd);
     OATPP_ASSERT(vars[1].posStart == 61);
     OATPP_ASSERT(vars[1].posEnd == 65);
     OATPP_ASSERT(vars[1].name == "name");

@@ -74,7 +74,7 @@ void ResultMapper::ResultData::bindResultsForCache() {
       colNames.push_back(colName);
       colIndices.insert({colName, i});
 
-      // OATPP_LOGd("oatpp::mysql::mapping::ResultMapper::ResultData::bindResultsForCache()", "Column %d: %s - %d", 
+      // OATPP_LOGd("oatpp::mysql::mapping::ResultMapper::ResultData::bindResultsForCache()", "Column {}: {} - {}", 
       //   i, colName->c_str(), fields[i].type);
 
       // bind result cache
@@ -239,17 +239,17 @@ oatpp::Void ResultMapper::readOneRowAsObject(ResultMapper* _this, ResultData* db
     if(it != fieldsMap.end()) {
       auto field = it->second;
       if(field->info.typeSelector && field->type == oatpp::Any::Class::getType()) {
-        // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readOneRowAsObject]", "polymorphic field=%s, index=%d", field->name, i);
+        // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readOneRowAsObject]", "polymorphic field={}, index={}", field->name, i);
         polymorphs.push_back({field, i});
       } else {
-        // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readOneRowAsObject]", "field=%s, index=%d", field->name, i);
+        // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readOneRowAsObject]", "field={}, index={}", field->name, i);
         mapping::Deserializer::InData inData(&dbData->bindResults[i], dbData->typeResolver);
         field->set(static_cast<oatpp::BaseObject *>(object.get()),
                    _this->m_deserializer.deserialize(inData, field->type));
       }
     } else {
       OATPP_LOGe("[oatpp::sqlite::mapping::ResultMapper::readOneRowAsObject]",
-                 "Error. The object of type '%s' has no field to map column '%s'.",
+                 "Error. The object of type '{}' has no field to map column '{}'.",
                  type->nameQualifier, dbData->colNames[i]->c_str());
       throw std::runtime_error("[oatpp::sqlite::mapping::ResultMapper::readOneRowAsObject]: Error. "
                                "The object of type " + std::string(type->nameQualifier) +
@@ -305,7 +305,7 @@ oatpp::Void ResultMapper::readOneRow(ResultData* dbData, const Type* type) {
   auto id = type->classId.id;
   auto& method = m_readOneRowMethods[id];
 
-  // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readOneRow]", "type=%s, method=%p", type->nameQualifier, method);
+  // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readOneRow]", "type={}, method={}", type->nameQualifier, method);
 
   if(method) {
     return (*method)(this, dbData, type);
@@ -334,7 +334,7 @@ oatpp::Void ResultMapper::readRows(ResultData* dbData, const Type* type, v_int64
   auto id = type->classId.id;
   auto& method = m_readRowsMethods[id];
 
-  // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readRows]", "type=%s, method=%p, id=%d", type->classId.name, method, id);
+  // OATPP_LOGd("[oatpp::mysql::mapping::ResultMapper::readRows]", "type={}, method={}, id={}", type->classId.name, method, id);
 
   if(method) {
     return (*method)(this, dbData, type, count);
