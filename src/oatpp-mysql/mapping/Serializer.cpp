@@ -35,6 +35,7 @@ Serializer::Serializer() {
   setSerializerMethod(data::type::__class::String::CLASS_ID, &Serializer::serializeString);
   setSerializerMethod(data::type::__class::Any::CLASS_ID, nullptr);
 
+  setSerializerMethod(data::type::__class::Boolean::CLASS_ID, &Serializer::serializeBoolean);
   setSerializerMethod(data::type::__class::Int8::CLASS_ID, &Serializer::serializeInt8);
   setSerializerMethod(data::type::__class::UInt8::CLASS_ID, &Serializer::serializeUInt8);
 
@@ -90,7 +91,7 @@ void Serializer::serialize(MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::V
   if(method) {
     (*method)(this, stmt, paramIndex, polymorph);
   } else {
-    throw std::runtime_error("[oatpp::sqlite::mapping::Serializer::serialize()]: "
+    throw std::runtime_error("[oatpp::mysql::mapping::Serializer::serialize()]: "
                              "Error. No serialize method for type '" + std::string(polymorph.getValueType()->classId.name) +
                              "'");
   }
@@ -119,7 +120,7 @@ void Serializer::serializeString(const Serializer* _this, MYSQL_STMT* stmt, v_ui
     std::string *buff = static_cast<std::string*>(polymorph.get());
 
     bindParam.buffer = static_cast<void*>(const_cast<char*>(buff->c_str()));
-    bindParam.buffer_length = buff->size();
+    bindParam.buffer_length = static_cast<unsigned long>(buff->size());
     bindParam.is_null = 0;
 
     OATPP_LOGd("Serializer::serializeString()", "value='{}'", buff->c_str());
@@ -130,6 +131,12 @@ void Serializer::serializeString(const Serializer* _this, MYSQL_STMT* stmt, v_ui
   }
 
   _this->setBindParam(bindParam, paramIndex);
+}
+
+
+void Serializer::serializeBoolean(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph)
+{
+  serializeInt8(_this, stmt, paramIndex, polymorph);
 }
 
 void Serializer::serializeInt8(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
@@ -338,9 +345,9 @@ void Serializer::serializeEnum(const Serializer* _this, MYSQL_STMT* stmt, v_uint
 
   switch(e) {
     case data::type::EnumInterpreterError::CONSTRAINT_NOT_NULL:
-      throw std::runtime_error("[oatpp::sqlite::mapping::Serializer::serializeEnum()]: Error. Enum constraint violated - 'NotNull'.");
+      throw std::runtime_error("[oatpp::mysql::mapping::Serializer::serializeEnum()]: Error. Enum constraint violated - 'NotNull'.");
     default:
-      throw std::runtime_error("[oatpp::sqlite::mapping::Serializer::serializeEnum()]: Error. Can't serialize Enum.");
+      throw std::runtime_error("[oatpp::mysql::mapping::Serializer::serializeEnum()]: Error. Can't serialize Enum.");
   }
 
 }
