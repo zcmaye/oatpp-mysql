@@ -7,12 +7,6 @@ QueryResult::QueryResult(MYSQL_STMT* stmt,
                          const provider::ResourceHandle<orm::Connection>& connection,
                          const std::shared_ptr<mapping::ResultMapper>& resultMapper,
                          const std::shared_ptr<const data::mapping::TypeResolver>& typeResolver)
-  : m_stmt(stmt)
-  , m_connection(connection)
-  , m_resultMapper(resultMapper)
-  , m_resultData(stmt, typeResolver)
-{
-  if (mysql_stmt_execute(m_stmt)) {
     m_errorMessage = "Error executing statement: " + std::string(mysql_stmt_error(m_stmt));
   }
 

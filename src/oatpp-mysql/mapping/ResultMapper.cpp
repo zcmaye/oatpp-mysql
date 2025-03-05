@@ -29,6 +29,7 @@ ResultMapper::ResultData::~ResultData() {
 }
 
 void ResultMapper::ResultData::init() {
+  isSuccess = (mysql_stmt_errno(stmt) == 0);
   next();
   rowIndex = 0;
 }
@@ -40,13 +41,11 @@ void ResultMapper::ResultData::next() {
     // fetch row failed
     case 1: {
       hasMore = false;
-      isSuccess = false;
       break;
     }
     // no more rows
     case MYSQL_NO_DATA: {
       hasMore = false;
-      isSuccess = true;
       break;
     };
     // data truncated
@@ -56,17 +55,18 @@ void ResultMapper::ResultData::next() {
     // fetch row success
     default: {
       hasMore = true;
-      isSuccess = true;
     }
 
   }
 
 }
 
-void ResultMapper::ResultData::bindResultsForCache() {
+void ResultMapper::ResultData::bindResultsForCache()
+{
   metaResults = mysql_stmt_result_metadata(stmt);
   // if null, no result set
-  if (metaResults) {
+  if (metaResults)
+  {
     colCount = mysql_num_fields(metaResults);
     MYSQL_FIELD* fields = mysql_fetch_fields(metaResults);
 
