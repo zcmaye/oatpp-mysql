@@ -136,7 +136,22 @@ void Serializer::serializeString(const Serializer* _this, MYSQL_STMT* stmt, v_ui
 
 void Serializer::serializeBoolean(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph)
 {
-  serializeInt8(_this, stmt, paramIndex, polymorph);
+  MYSQL_BIND bindParam;
+  std::memset(&bindParam, 0, sizeof(bindParam));
+  bindParam.buffer_type = MYSQL_TYPE_TINY;
+
+  if(polymorph) {
+    auto v = polymorph.cast<oatpp::Boolean>();
+
+    bindParam.buffer = v.get();
+    bindParam.buffer_length = 0;
+    bindParam.is_null = 0;
+  } else {
+    bindParam.is_null = static_cast<bool*>(malloc(sizeof(bool)));
+    *bindParam.is_null = 1;
+  }
+
+  _this->setBindParam(bindParam, paramIndex);
 }
 
 void Serializer::serializeInt8(const Serializer* _this, MYSQL_STMT* stmt, v_uint32 paramIndex, const oatpp::Void& polymorph) {
