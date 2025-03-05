@@ -41,7 +41,7 @@ v_int64 QueryResult::getPosition() const {
 }
 
 v_int64 QueryResult::getKnownCount() const {
-  return -1;
+  return m_resultMapper->getKnownCount(const_cast<oatpp::mysql::mapping::ResultMapper::ResultData *>(&m_resultData));
 }
 
 bool QueryResult::hasMoreToFetch() const {
