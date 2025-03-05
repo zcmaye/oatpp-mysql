@@ -41,6 +41,7 @@ void ResultMapper::ResultData::next() {
     case 1: {
       hasMore = false;
       isSuccess = false;
+      break;
     }
     // no more rows
     case MYSQL_NO_DATA: {
@@ -345,5 +346,24 @@ oatpp::Void ResultMapper::readRows(ResultData* dbData, const Type* type, v_int64
                            "Allowed types are oatpp::Vector, oatpp::List, oatpp::UnorderedSet");
 
 }
+
+
+  v_int64 ResultMapper::getKnownCount(ResultData* dbData) const 
+  {
+    v_uint64 affect_rows = mysql_stmt_affected_rows(dbData->stmt);
+    if(affect_rows != -1) {
+        return affect_rows;
+    }
+    v_uint64  num_rows = mysql_stmt_num_rows(dbData->stmt);
+    if(num_rows == 0 ) {
+      //No Error
+      if(mysql_stmt_errno(dbData->stmt) == 0) {
+          return 0;
+      }
+      //has Error
+      return -1;
+    }
+      return num_rows;
+  }
 
 }}}

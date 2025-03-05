@@ -176,6 +176,12 @@ public:
    */
   oatpp::Void readRows(ResultData* dbData, const Type* type, v_int64 count);
 
+  /**
+   * Get result entries count in the case it's known.
+   * @param dbData
+   * @return - `[0..N]` - in case known. `-1` - otherwise.
+   */
+  v_int64 getKnownCount(ResultData* dbData)const;
 };
 
 }}}
