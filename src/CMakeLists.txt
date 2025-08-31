@@ -18,6 +18,8 @@
         oatpp-mysql/QueryResult.cpp
         oatpp-mysql/QueryResult.hpp
         oatpp-mysql/orm.hpp
+        oatpp-mysql/Utils.hpp
+        oatpp-mysql/Utils.cpp
 )
 
 
