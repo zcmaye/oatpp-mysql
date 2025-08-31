@@ -21,6 +21,9 @@ project(${OATPP_THIS_MODULE_NAME}
         ## DESCRIPTION "Something about my-module"
 )
 
+#set(CMAKE_PREFIX_PATH F:\\Tools\\oatpp)
+#set(MYSQL_DIR F:\\Tools\\MySQL\\MySQLServer8.4)
+
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(OATPP_DIR_SRC "Path to oatpp module directory (sources)")
 option(OATPP_DIR_LIB "Path to directory with liboatpp (directory containing ex: liboatpp.so or liboatpp.dynlib)")

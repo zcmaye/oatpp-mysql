@@ -7,15 +7,23 @@ QueryResult::QueryResult(MYSQL_STMT* stmt,
                          const provider::ResourceHandle<orm::Connection>& connection,
                          const std::shared_ptr<mapping::ResultMapper>& resultMapper,
                          const std::shared_ptr<const data::mapping::TypeResolver>& typeResolver)
-    m_errorMessage = "Error executing statement: " + std::string(mysql_stmt_error(m_stmt));
-  }
-
-  m_resultData.init();    // initialize the information of all columns
+    :m_stmt(stmt)
+    ,m_connection(connection)
+    ,m_resultMapper(resultMapper)
+    ,m_resultData(stmt,typeResolver)
+{
+	m_resultData.init();    // initialize the information of all columns
+	if (mysql_stmt_errno(m_stmt) != 0) {
+		m_errorMessage = "Error executing statement: " + std::string(mysql_stmt_error(m_stmt));
+	}
+	else {
+		m_errorMessage = std::string(mysql_stmt_error(m_stmt));
+	}
 }
 
 QueryResult::~QueryResult() {
-  mysql_stmt_close(m_stmt);
-  OATPP_LOGd("QueryResult", "QueryResult destroyed");
+	mysql_stmt_close(m_stmt);
+	OATPP_LOGd("QueryResult", "QueryResult destroyed");
 }
 
 provider::ResourceHandle<orm::Connection> QueryResult::getConnection() const {

@@ -33,6 +33,7 @@
 
 # tmp folder of install-deps
 utility/install-deps/tmp/
+.vs
 
 # idea
 .idea
