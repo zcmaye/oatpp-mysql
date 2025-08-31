@@ -7,6 +7,7 @@
 #define oatpp_mysql_orm_hpp
 
 #include "Executor.hpp"
+#include "Utils.hpp"
 
 #include "oatpp/orm/SchemaMigration.hpp"
 #include "oatpp/orm/DbClient.hpp"
